@@ -1,35 +1,35 @@
-parse = (txt)=> {
-    var html = '<head><link rel="stylesheet" href="clearautodoc.css"></head><body>'
-    txt = txt.replace(/^\s*[\r\n]/gm,"") // remove blank lines
-	txt = txt.replace(/\[key\]/g,"⌨ Introduce ")
-	txt = txt.replace(/\[btn\]/g,"Clic en el botón: ")
-	txt = txt.replace(/\[chk\]/g,"Clic en la opción: ")
-	txt = txt.replace(/\[lnk\]/g,"Clic en la liga: ")
-    var array = txt.split("\n");
-	html +='<div style="font-size: 1.1em">'+array[0]+'</div>' // get title
-	html +='<ol>'
-	var i = 0
-	var actorTotal = 0
-	var actor = {};
-    for(i = 1; i < 5; i++) { // get actors
-		if ( m = array[i].match(/^([^ ]+) ([^:]+): (.+$)/) ) { 
-			if (m[1] == 'APP') icon = '💻'
-			else icon = '💁'
-			html+='<li actor on='+i+'><i>'+icon+'</i> '+m[3]+'</li>' 
-			actor[m[2]] = i
-			actorTotal++
-		}
-    }
-	if (actorTotal >= 2) {
-		for(i = actorTotal + 1; i < array.length; i++) { 
-				if ( m = array[i].match(/^ROL (.+$)/) ) actor['ROL'] = actor[m[1]]
-			else if ( m = array[i].match(/^SYS (.+$)/) ) actor['SYS'] = actor[m[1]]
-			else if ( m = array[i].match(/^([^-]+)->([^:]+): (.+$)/) ) html+='<li fr='+actor[m[1]]+' to='+actor[m[2]]+(actor[m[1]] > actor[m[2]]? ' bk' : '')+'>'+m[3]+'</li>'
-			else if ( m = array[i].match(/^([^:]+): (.+$)/) ) html+='<li on='+actor[m[1]]+'>'+m[2]+'</li>'
-		}
-	} else { html='Error: actors not found' }
-	console.log(actor)
-	console.log(actor['SYS'])
-	html+='</body>'
-	
+var Dbuf = "";
+D = (c)=> { 
+	Dbuf += c.split("\n").map(line => line.trim()).join("\n"); console.log(Dbuf) 
+	};
+DIMG = async()=> { 
+	var canvas = await html2canvas(document.querySelector("#content"));
+	Dbuf += " " + canvas.toDataURL('image/jpg', 0.5) + "\n"; console.log(Dbuf);
+};
+DIMG2 = async()=> { {
+  const stream = await navigator.mediaDevices.getDisplayMedia({ preferCurrentTab: true });
+  const vid = document.createElement("video");
+  vid.addEventListener( "loadedmetadata", function () {
+    const canvas = document.createElement("canvas"),
+    ctx = canvas.getContext("2d");
+    ctx.canvas.width = vid.videoWidth;
+    ctx.canvas.height = vid.videoHeight;
+    ctx.drawImage(vid, 0, 0, vid.videoWidth, vid.videoHeight);
+    stream.getVideoTracks()[0].stop();
+	Dbuf += " " + canvas.toDataURL("image/jpeg", 0.5); console.log(Dbuf);
+  } );
+  vid.srcObject = stream;
+  vid.play();
 }
+window.addEventListener("click", (e)=> {
+	switch (e.target.nodeName) {
+		case 'INPUT': var elem = e.target.parentNode; 
+			while (elem != null && elem.tagName != "LABEL") elem = elem.previousSibling;
+			if (elem.innerHTML.includes("checkbox")) D(`\nROL->APP: [chk] ${elem.textContent.trim()}\n`);
+			else D(`\nROL->APP: [key] ${elem.textContent.trim()}\n`);
+			break;
+		case 'BUTTON': D(`\nROL->APP: [btn] ${e.target.textContent.trim()}\n`); 
+			break;
+		case 'A': D(`\nROL->APP: [lnk] ${e.target.innerHTML.trim()}\n`); 
+	} 
+});

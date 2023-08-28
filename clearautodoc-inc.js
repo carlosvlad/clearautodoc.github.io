@@ -25,11 +25,11 @@ window.addEventListener("click", (e)=> {
 	switch (e.target.nodeName) {
 		case 'INPUT': var elem = e.target.parentNode; 
 			while (elem != null && elem.tagName != "LABEL") elem = elem.previousSibling;
-			if (elem.innerHTML.includes("checkbox")) D(`\nROL->SYS: [chk] ${elem.textContent.trim()}\n`);
-			else D(`\nROL->SYS: [key] ${elem.textContent.trim()}\n`);
+			if (elem.innerHTML.includes("checkbox")) D(`\nROL->APP: [chk] ${elem.textContent.trim()}\n`);
+			else D(`\nROL->APP: [key] ${elem.textContent.trim()}\n`);
 			break;
-		case 'BUTTON': D(`\nROL->SYS: [btn] ${e.target.textContent.trim()}\n`); 
+		case 'BUTTON': D(`\nROL->APP: [btn] ${e.target.textContent.trim()}\n`); 
 			break;
-		case 'A': D(`\nROL->SYS: [lnk] ${e.target.innerHTML.trim()}\n`); 
+		case 'A': D(`\nROL->APP: [lnk] ${e.target.innerHTML.trim()}\n`); 
 	} 
 });
